@@ -1,12 +1,14 @@
 import Homework_3_1.FileWorkerException;
 import Homework_3_1.WorkingWithFiles;
+import Homework_4_1.DeadLock;
 
 import java.nio.file.Paths;
-
+import java.util.stream.Stream;
 
 
 public class Main {
     public static void main(String[] args) {
+
 
         //region Homework 2
 
@@ -176,6 +178,7 @@ public class Main {
         //endregion Homework 2
 
         //region Homework 3
+/*
 
         WorkingWithFiles workingWithFiles = new WorkingWithFiles();
 
@@ -207,8 +210,107 @@ public class Main {
         } catch (FileWorkerException e) {
             System.err.println(e.toString());
         }
+*/
 
         //endregion Homework 3
+
+        //region Homework 4
+
+        //region Homework 4.1
+
+        //1) Реализовать программы, которые получают DeadLock и LiveLock.
+
+        //DeadLock
+
+        //region Example from Oracle
+        //не отловил.
+/*
+        try {
+            for (int i = 1; i < 10000000; i++) {
+
+                System.out.format("Попытка deadlock № %s%n", i);
+                final DeadLock deadlockFirst = new DeadLock("deadlockFirst" + i);
+                final DeadLock deadlockSecond = new DeadLock("deadlockSecond" + i);
+                Thread treadFirst = new Thread(() ->{ deadlockFirst.DoFirst(deadlockSecond);});
+                Thread treadSecond = new Thread(() -> { deadlockSecond.DoFirst(deadlockFirst);});
+                treadFirst.start();
+                treadSecond.start();
+                treadSecond.join();
+            }
+        } catch (InterruptedException exception) {
+            System.out.println(exception.toString());
+        }
+        */
+        //endregion Example from Oracle
+
+        //region Simple example
+
+        Object objectLock1 = new Object();
+        Object objectLock2 = new Object();
+
+        Thread thread1 = new Thread(() -> {
+            synchronized (objectLock1) {
+                System.out.println("Поток 1 заблокирован objectLock1");
+                try {
+                    Thread.sleep(1000); // Имитация работы
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                synchronized (objectLock2) {
+                    System.out.println("Поток 1 заблокирован objectLock2");
+                }
+            }
+        });
+
+
+        Thread thread2 = new Thread(() -> {
+            synchronized (objectLock2) {
+                System.out.println("Поток 2 заблокирован objectLock2");
+                try {
+                    Thread.sleep(1000); // Имитация работы
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                synchronized (objectLock1) {
+                    System.out.println("Поток 2 заблокирован objectLock1");
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+
+        //endregion Simple example
+
+        //LiveLock
+
+
+
+        //endregion Homework 4.1
+
+        //region Homework 4.2
+
+        //2) Создать два потока (поток 1 постоянно выводит "1", а поток 2 выводит "2"), которые будут бесконечно выводить в консоль "1" и "2" по очереди(начиная с "1")
+/*
+
+        Runnable task1 = () -> {
+            System.out.println("1");
+        };
+        Runnable task2 = () -> {
+            System.out.println("2");
+        };
+        Thread thread1 = new Thread(task1);
+        Thread thread2 = new Thread(task2);
+        thread1.start();
+        thread2.start();
+*/
+
+
+
+
+        //endregion Homework 4.2
+
+        //endregion Homework 4
 
     }
 }

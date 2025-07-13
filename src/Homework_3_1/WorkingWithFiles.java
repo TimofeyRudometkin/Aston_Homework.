@@ -21,7 +21,6 @@ public class WorkingWithFiles implements FileWorker{
         }
     }
 
-    @Override
     public void AddTextToFile(String fileName, String textRecorded) throws FileWorkerException {
         try (PrintWriter  writer = new PrintWriter(new FileWriter(fileName,true))) {
             writer.println(textRecorded);
