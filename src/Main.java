@@ -3,10 +3,24 @@ import Homework_3_1.WorkingWithFiles;
 import Homework_4_1.DeadLock;
 
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
 
 public class Main {
+
+    //region Homework 4.2
+
+    //region Вариант 2
+
+    private static boolean booleanFirst = true;
+
+    //endregion Вариант 2
+
+    //endregion Homework 4.2
+
     public static void main(String[] args) {
 
 
@@ -220,7 +234,7 @@ public class Main {
 
         //1) Реализовать программы, которые получают DeadLock и LiveLock.
 
-        //DeadLock
+        //region DeadLock
 
         //region Example from Oracle
         //не отловил.
@@ -244,73 +258,197 @@ public class Main {
         //endregion Example from Oracle
 
         //region Simple example
+/*
 
         Object objectLock1 = new Object();
         Object objectLock2 = new Object();
 
         Thread thread1 = new Thread(() -> {
             synchronized (objectLock1) {
-                System.out.println("Поток 1 заблокирован objectLock1");
+                System.out.println("Поток 1 синхронизирован через objectLock1");
                 try {
                     Thread.sleep(1000); // Имитация работы
+                    synchronized (objectLock2) {
+                        System.out.println("Поток 1 синхронизирован через objectLock2");
+                    }
+                    System.out.println("Поток 1 вышел из синхронизации по objectLock2");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                synchronized (objectLock2) {
-                    System.out.println("Поток 1 заблокирован objectLock2");
-                }
             }
+            System.out.println("Поток 1 вышел из синхронизации по objectLock1");
         });
 
 
         Thread thread2 = new Thread(() -> {
             synchronized (objectLock2) {
-                System.out.println("Поток 2 заблокирован objectLock2");
+                System.out.println("Поток 2 синхронизирован через objectLock2");
                 try {
                     Thread.sleep(1000); // Имитация работы
+                    synchronized (objectLock1) {
+                        System.out.println("Поток 2 синхронизирован через objectLock1");
+                    }
+                    System.out.println("Поток 2 вышел из синхронизации по objectLock1");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                synchronized (objectLock1) {
-                    System.out.println("Поток 2 заблокирован objectLock1");
-                }
             }
+            System.out.println("Поток 2 вышел из синхронизации по objectLock2");
         });
 
         thread1.start();
+
+*/
+/*
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+*//*
+
+
         thread2.start();
+*/
 
         //endregion Simple example
 
-        //LiveLock
+        //endregion DeadLock
 
+        //region LiveLock
+/*
 
+        Lock first = new ReentrantLock();
+        Lock second = new ReentrantLock();
+
+        Runnable locker = () -> {
+            boolean firstLocked = false;
+            boolean secondLocked = false;
+            try {
+                while (!firstLocked || !secondLocked) {
+                    firstLocked = first.tryLock(100, TimeUnit.MILLISECONDS);
+                    WorkImmitation("First Locked: " + firstLocked);
+                    secondLocked = second.tryLock(100, TimeUnit.MILLISECONDS);
+                    WorkImmitation("Second Locked: " + secondLocked);
+                }
+                first.unlock();
+                second.unlock();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+
+        new Thread(locker).start();
+        new Thread(locker).start();
+*/
+
+        //endregion LiveLock
 
         //endregion Homework 4.1
 
         //region Homework 4.2
 
         //2) Создать два потока (поток 1 постоянно выводит "1", а поток 2 выводит "2"), которые будут бесконечно выводить в консоль "1" и "2" по очереди(начиная с "1")
-/*
 
-        Runnable task1 = () -> {
-            System.out.println("1");
+        //region Вариант 1
+        /*
+        Object objectLock = new Object();
+
+        Runnable task = () -> {
+                while(true) {
+                    try {
+                        synchronized (objectLock) {
+                            System.out.println(Thread.currentThread().getName());
+                        }
+                        Thread.sleep(5000);
+
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.out.println("Поток № " + Thread.currentThread().getName() + " выбросил исключение!"
+                                + System.lineSeparator() + e.toString());
+                        }
+                    }
         };
-        Runnable task2 = () -> {
-            System.out.println("2");
-        };
-        Thread thread1 = new Thread(task1);
-        Thread thread2 = new Thread(task2);
+
+        Thread thread1 = new Thread(task);
+        thread1.setName("1");
+        Thread thread2 = new Thread(task);
+        thread2.setName("2");
         thread1.start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         thread2.start();
 */
+        //endregion Вариант 1
 
+        //region Вариант 2
 
+        Object objectLock = new Object();
 
+        Thread thread1 = new Thread(() -> {
+            while (true) {
+                synchronized (objectLock) {
+                    try {
+                        while (!booleanFirst) {
+                            objectLock.wait();
+                        }
+                        System.out.println("1");
+                        Thread.sleep(500);
+                        booleanFirst = false;
+                        objectLock.notify();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            while (true) {
+                synchronized (objectLock) {
+                    try {
+                        while (booleanFirst) {
+                            objectLock.wait();
+                        }
+                        System.out.println("2");
+                        Thread.sleep(500);
+                        booleanFirst = true;
+                        objectLock.notify();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        });
+
+        booleanFirst=true;
+        thread1.start();
+        thread2.start();
+
+        //endregion Вариант 2
 
         //endregion Homework 4.2
 
         //endregion Homework 4
 
     }
+
+    //region LiveLock
+/*
+
+    public static void WorkImmitation(String text) {
+        try {
+            System.out.println(text + " " + ", я - поток с id = " + Thread.currentThread().getId() + " и я усердно работаю!");
+            Thread.currentThread().sleep( 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+*/
+
+    //endregion LiveLock
+
 }
