@@ -1,17 +1,24 @@
-import Homework_3_1.FileWorkerException;
-import Homework_3_1.WorkingWithFiles;
-import Homework_4_1.DeadLock;
-
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Stream;
+import Homework_5_1_Strategy.Logger;
+import Homework_5_1_Strategy.LoggerDB;
+import Homework_5_1_Strategy.LoggerFile;
+import Homework_5_2_Chain_of_Responsibility.FriendRequestEvent;
+import Homework_5_2_Chain_of_Responsibility.MessageReceivedEvent;
+import Homework_5_2_Chain_of_Responsibility.NotificationWorker;
+import Homework_5_3_Builder.Car;
+import Homework_5_4_Proxy.DataAccess;
+import Homework_5_4_Proxy.ProxyDataAccess;
+import Homework_5_5_Decorator.Drink;
+import Homework_5_5_Decorator.Gas;
+import Homework_5_5_Decorator.Syrup;
+import Homework_5_5_Decorator.Water;
+import Homework_5_6_Adapter.BmpAdapter;
+import Homework_5_6_Adapter.ImageLoader;
+import Homework_5_6_Adapter.JpegAdapter;
 
 
 public class Main {
 
-    //region Homework 4.2
+    /*//region Homework 4.2
 
     //region Вариант 2
 
@@ -19,7 +26,7 @@ public class Main {
 
     //endregion Вариант 2
 
-    //endregion Homework 4.2
+    //endregion Homework 4.2*/
 
     public static void main(String[] args) {
 
@@ -349,9 +356,9 @@ public class Main {
         //region Homework 4.2
 
         //2) Создать два потока (поток 1 постоянно выводит "1", а поток 2 выводит "2"), которые будут бесконечно выводить в консоль "1" и "2" по очереди(начиная с "1")
+/*
 
         //region Вариант 1
-        /*
         Object objectLock = new Object();
 
         Runnable task = () -> {
@@ -381,52 +388,54 @@ public class Main {
             throw new RuntimeException(e);
         }
         thread2.start();
-*/
         //endregion Вариант 1
+*/
 
         //region Вариант 2
+/*
 
-        Object objectLock = new Object();
+                Object objectLock = new Object();
 
-        Thread thread1 = new Thread(() -> {
-            while (true) {
-                synchronized (objectLock) {
-                    try {
-                        while (!booleanFirst) {
-                            objectLock.wait();
+                Thread thread1 = new Thread(() -> {
+                    while (true) {
+                        synchronized (objectLock) {
+                            try {
+                                while (!booleanFirst) {
+                                    objectLock.wait();
+                                }
+                                System.out.println("1");
+                                //Thread.sleep(500);
+                                booleanFirst = false;
+                                objectLock.notify();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
                         }
-                        System.out.println("1");
-                        Thread.sleep(500);
-                        booleanFirst = false;
-                        objectLock.notify();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                     }
-                }
-            }
-        });
+                });
 
-        Thread thread2 = new Thread(() -> {
-            while (true) {
-                synchronized (objectLock) {
-                    try {
-                        while (booleanFirst) {
-                            objectLock.wait();
+                Thread thread2 = new Thread(() -> {
+                    while (true) {
+                        synchronized (objectLock) {
+                            try {
+                                while (booleanFirst) {
+                                    objectLock.wait();
+                                }
+                                System.out.println("2");
+                                //Thread.sleep(500);
+                                booleanFirst = true;
+                                objectLock.notify();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
                         }
-                        System.out.println("2");
-                        Thread.sleep(500);
-                        booleanFirst = true;
-                        objectLock.notify();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                     }
-                }
-            }
-        });
+                });
 
-        booleanFirst=true;
-        thread1.start();
-        thread2.start();
+                booleanFirst=true;
+                thread1.start();
+                thread2.start();
+*/
 
         //endregion Вариант 2
 
@@ -434,6 +443,90 @@ public class Main {
 
         //endregion Homework 4
 
+        //region Homework 5
+/*
+
+        //region Homework 5.1  Стратегия
+
+        Logger logger = new Logger();
+
+        logger.setLoggingData(new LoggerDB());
+        logger.LogData("Логируем в БД");
+
+        logger.setLoggingData(new LoggerFile());
+        logger.LogData("Логируем в файл");
+
+        //endregion Homework 5.1 Стратегия
+*/
+/*
+
+        //region Homework 5.2  Цепочка обязанностей
+
+        NotificationWorker center = new NotificationWorker();
+
+        center.addEvent(new FriendRequestEvent("Пользователь Афанасий"));
+        center.addEvent(new MessageReceivedEvent("Пользователь Афанасий", "Привет!"));
+
+        center.processNotifications();
+
+        //endregion Homework 5.2 Цепочка обязанностей
+*/
+/*
+
+        //region Homework 5.3  Билдер
+
+        Car car = new Car.CarBuilder("Джип")
+                .withEngine("V12")
+                .withAirConditioning(true)
+                .withSunroof(false)
+                .build();
+
+        System.out.println("Модель: " + car.getModel());
+        System.out.println("Двигатель: " + car.getEngine());
+        System.out.println("Кондиционер: " + car.hasAirConditioning());
+        System.out.println("Люк: " + car.hasSunroof());
+
+        //endregion Homework 5.3  Билдер
+*/
+/*
+
+        //region Homework 5.4  Прокси
+
+        DataAccess dataAccessAdmin = new ProxyDataAccess("admin", "password");
+
+        dataAccessAdmin.writeData("Конфиденциальные данные");
+        dataAccessAdmin.readData();
+
+        DataAccess dataAccessJustUser = new ProxyDataAccess("user", "pass");
+        dataAccessJustUser.readData();
+
+        //endregion Homework 5.4  Прокси
+*/
+/*
+        //region Homework 5.5  Декоратор
+
+        Drink drink = new Water();
+        System.out.println(drink.getDescription() + " - $" + drink.cost());
+        drink = new Gas(drink);
+        System.out.println(drink.getDescription() + " - $" + drink.cost());
+        drink = new Syrup(drink);
+        System.out.println(drink.getDescription() + " - $" + drink.cost());
+
+        //endregion Homework 5.5  Декоратор*/
+/*
+
+        //region Homework 5.6  Адаптер
+
+        ImageLoader jpeg = new JpegAdapter();
+        ImageLoader png = new BmpAdapter();
+
+        jpeg.loadImage("image.jpg");
+        png.loadImage("image.png");
+
+        //endregion Homework 5.6  Адаптер
+*/
+
+        //endregion Homework 5
     }
 
     //region LiveLock
