@@ -13,4 +13,5 @@ public class Syrup extends DecoratorPattern{
     @Override
     public double cost() {
         return drink.cost() + 1.50;
-    }}
+    }
+}

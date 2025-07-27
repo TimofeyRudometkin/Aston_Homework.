@@ -459,21 +459,19 @@ public class Main {
         //endregion Homework 5.1 Стратегия
 */
 /*
-
         //region Homework 5.2  Цепочка обязанностей
 
-        NotificationWorker center = new NotificationWorker();
+        NotificationWorker notificationWorker  = new NotificationWorker();
 
-        center.addEvent(new FriendRequestEvent("Пользователь Афанасий"));
-        center.addEvent(new MessageReceivedEvent("Пользователь Афанасий", "Привет!"));
+        notificationWorker .addEvent(new FriendRequestEvent("Пользователь Афанасий"));
+        notificationWorker .addEvent(new MessageReceivedEvent("Пользователь Афанасий", "Привет!"));
 
-        center.processNotifications();
+        notificationWorker .processNotifications();
 
-        //endregion Homework 5.2 Цепочка обязанностей
-*/
+        //endregion Homework 5.2 Цепочка обязанностей*/
 /*
 
-        //region Homework 5.3  Билдер
+        //region Homework 5.3  Строитель
 
         Car car = new Car.CarBuilder("Джип")
                 .withEngine("V12")
@@ -486,7 +484,7 @@ public class Main {
         System.out.println("Кондиционер: " + car.hasAirConditioning());
         System.out.println("Люк: " + car.hasSunroof());
 
-        //endregion Homework 5.3  Билдер
+        //endregion Homework 5.3  Строитель
 */
 /*
 
